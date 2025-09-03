@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h2>Dashboard</h2>
+  <div id="userInfo"></div>
+
+  <div id="studentSection" style="display:none;">
+    <h3>My Attendance</h3>
+    <div id="attendanceData"></div>
+
+    <h3>My Marks</h3>
+    <div id="marksData"></div>
+  </div>
+
+  <div id="teacherSection" style="display:none;">
+    <h3>Mark Attendance</h3>
+    <!-- Form to mark attendance -->
+    <form id="markAttendanceForm">
+      <input type="text" id="studentId" placeholder="Student ID" required>
+      <input type="date" id="date" required>
+      <select id="status">
+        <option value="present">Present</option>
+        <option value="absent">Absent</option>
+      </select>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <div id="noticeSection">
+    <h3>Notices</h3>
+    <div id="notices"></div>
+  </div>
+
+  <script src="js/user.js"></script>
+  <script src="js/attendance.js"></script>
+  <script src="js/marks.js"></script>
+  <script src="js/notice.js"></script>
+</body>
+</html>
