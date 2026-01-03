@@ -1,87 +1,330 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Dashboard</title>
+  <title>Dashboard | UNIMIS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* SPA View Logic */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Active Navigation State */
+    .sidebar nav div.active-nav {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-left: 4px solid #00cec9;
+      /* Accent Color */
+    }
+
+    /* Admin Only Visibility Helper */
+    /* Role-based Visibility */
+    .admin-only,
+    .student-only,
+    .academic-only {
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
     <div class="sidebar">
       <h2><i class="fas fa-university"></i> UNIMIS</h2>
-      <nav>
+      <nav id="sidebarNav">
         <p style="opacity:0.5; font-size: 0.8em; text-transform: uppercase; margin-bottom: 10px;">Main Menu</p>
-        <div class="active"><i class="fas fa-th-large"></i> Dashboard</div>
-        <div><i class="fas fa-book"></i> Courses</div>
-        <div><i class="fas fa-calendar-alt"></i> Schedule</div>
-        <div><i class="fas fa-user-circle"></i> Profile</div>
+
+        <div id="nav-dashboard" class="active-nav" onclick="switchView('dashboard')">
+          <i class="fas fa-th-large"></i> Dashboard
+        </div>
+        <div id="nav-courses" class="academic-only" onclick="switchView('courses')">
+          <i class="fas fa-book"></i> Courses
+        </div>
+        <div id="nav-schedule" class="student-only" onclick="switchView('schedule')">
+          <i class="fas fa-calendar-alt"></i> Schedule
+        </div>
+        <div id="nav-profile" onclick="switchView('profile')">
+          <i class="fas fa-user-circle"></i> Profile
+        </div>
+
+        <div id="nav-fees" class="student-only" onclick="switchView('fees')">
+          <i class="fas fa-money-bill-wave"></i> Fees
+        </div>
+        <div id="nav-branches" class="admin-only" onclick="switchView('branches')">
+          <i class="fas fa-code-branch"></i> Manage Branches
+        </div>
+        <div id="nav-admin" class="admin-only" onclick="switchView('admin')">
+          <i class="fas fa-chart-line"></i> Admin Panel
+        </div>
       </nav>
-      
+
       <div style="margin-top: auto; opacity: 0.6; font-size: 0.8em;">
         &copy; 2025 PythonMIS
       </div>
     </div>
 
     <div class="main-content">
-      
+
       <div class="welcome-banner fade-in">
-        <div id="userInfo">
-          <h1 style="margin:0; font-size: 1.8em;">Welcome back!</h1>
-          <p style="margin:5px 0 0 0; opacity: 0.9;">Loading your profile...</p>
+        <div id="headerInfo">
+          <h1 style="margin:0; font-size: 1.8em;">Dashboard</h1>
+          <p id="welcomeSubtext" style="margin:5px 0 0 0; opacity: 0.9;">Welcome to your portal</p>
         </div>
         <button onclick="logout()" class="btn btn-danger" style="padding: 10px 20px; font-size: 0.9em;">
           <i class="fas fa-sign-out-alt"></i> Logout
         </button>
       </div>
 
-      <div id="approvalSection" class="section-card fade-in" style="display:none; border-top: 4px solid #e17055;">
-        <h3 style="color: #e17055;"><i class="fas fa-user-check"></i> Pending Approvals</h3>
-        <p style="color: #636e72; font-size: 0.9em; margin-bottom: 15px;">
-          The following users have requested access to the portal.
-        </p>
-        <div id="pendingList">
-          Loading...
+      <div id="view-dashboard" class="view-section active fade-in">
+
+        <div id="approvalSection" class="section-card" style="display:none; border-top: 4px solid #e17055;">
+          <h3 style="color: #e17055;"><i class="fas fa-user-check"></i> Pending Approvals</h3>
+          <p style="color: #666; font-size: 0.9em;">The following users requested access:</p>
+          <div id="pendingList" style="margin-top:15px;">Loading...</div>
+        </div>
+
+        <div id="studentSection" style="display:none;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div class="section-card">
+              <h3 style="color: #6c5ce7;"><i class="fas fa-clipboard-check"></i> Attendance</h3>
+              <div id="attendanceData" style="margin-top: 15px;">Loading...</div>
+            </div>
+            <div class="section-card">
+              <h3 style="color: #00b894;"><i class="fas fa-trophy"></i> Marks</h3>
+              <div id="marksData" style="margin-top: 15px;">Loading...</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="teacherSection" style="display:none;">
+          <div class="section-card">
+            <h3 style="color: #0984e3;"><i class="fas fa-edit"></i> Mark Attendance</h3>
+            <form id="markAttendanceForm"
+              style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 15px; align-items: center; margin-top: 15px;">
+              <input type="text" id="studentId" placeholder="Student ID" required style="margin:0;">
+              <input type="date" id="date" required style="margin:0;">
+              <select id="status" style="margin:0;">
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+              </select>
+              <button type="submit" class="btn">Save</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="noticeSection" style="margin-top: 30px;">
+          <h3 style="margin-bottom: 20px; color: #2d3436;">Campus Notices</h3>
+          <div id="notices">Loading notices...</div>
         </div>
       </div>
 
-      <div id="studentSection" class="fade-in" style="display:none; animation-delay: 0.2s;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-          
-          <div class="section-card">
-            <h3 style="color: #6c5ce7;"><i class="fas fa-clipboard-check"></i> Attendance</h3>
-            <div id="attendanceData" style="margin-top: 15px;">Loading...</div>
-          </div>
-
-          <div class="section-card">
-            <h3 style="color: #00b894;"><i class="fas fa-trophy"></i> Marks</h3>
-            <div id="marksData" style="margin-top: 15px;">Loading...</div>
-          </div>
-          
-        </div>
-      </div>
-
-      <div id="teacherSection" class="fade-in" style="display:none; animation-delay: 0.2s;">
+      <div id="view-courses" class="view-section fade-in">
         <div class="section-card">
-          <h3 style="color: #0984e3;"><i class="fas fa-edit"></i> Mark Attendance</h3>
-          <p style="color: #636e72; font-size: 0.9em;">Enter student details below to update records.</p>
-          
-          <form id="markAttendanceForm" style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 15px; align-items: center; margin-top: 20px;">
-            <input type="text" id="studentId" placeholder="Student ID" required style="margin:0;">
-            <input type="date" id="date" required style="margin:0;">
-            <select id="status" style="margin:0;">
-              <option value="present">Present</option>
-              <option value="absent">Absent</option>
-            </select>
-            <button type="submit" class="btn"><i class="fas fa-save"></i> Save</button>
-          </form>
+          <h2>My Enrolled Courses</h2>
+          <div id="coursesContainer" style="margin-top:20px;">
+            Loading courses...
+          </div>
         </div>
       </div>
 
-      <div id="noticeSection" class="fade-in" style="margin-top: 30px; animation-delay: 0.4s;">
-        <h3 style="margin-bottom: 20px; color: #2d3436;">Campus Notices</h3>
-        <div id="notices">Loading notices...</div>
+      <div id="view-schedule" class="view-section fade-in">
+        <div class="section-card">
+          <h2>Weekly Schedule</h2>
+          <div id="scheduleContainer" style="overflow-x: auto; margin-top: 15px;">
+            <p>Loading schedule...</p>
+          </div>
+        </div>
       </div>
 
+      <div id="view-fees" class="view-section fade-in">
+        <div class="section-card">
+          <h2>My Fee Status</h2>
+          <div id="feeContainer" style="margin-top: 20px;">
+            <!-- Fees Table -->
+          </div>
+          <div
+            style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 0.9em;">
+            <strong><i class="fas fa-exclamation-triangle"></i> Note:</strong>
+            We do not accept online payments. For any fee-related issues or to make a payment, please contact the Admin
+            Office.
+          </div>
+        </div>
+      </div>
+
+      <div id="view-profile" class="view-section fade-in">
+        <div class="section-card" style="max-width: 700px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fas fa-user-circle" style="font-size: 5rem; color: #6c5ce7;"></i>
+            <h2 id="profileName" style="margin-top: 10px;">Loading...</h2>
+            <span id="profileRole"
+              style="background: #eee; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; font-weight: bold;">---</span>
+          </div>
+
+          <div
+            style="text-align:center; font-size: 1.2em; font-weight: bold; color: #6c5ce7; margin-bottom: 20px; border: 1px dashed #6c5ce7; padding: 10px; border-radius: 8px;">
+            Admission No: <span id="profileAdmNo">--</span>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; align-items: center;">
+            <strong><i class="fas fa-envelope"></i> Email:</strong> <span id="profileEmail">...</span>
+            <strong><i class="fas fa-phone"></i> Phone:</strong> <span id="profilePhone">...</span>
+            <strong><i class="fas fa-birthday-cake"></i> DOB:</strong> <span id="profileDob">...</span>
+            <strong><i class="fas fa-map-marker-alt"></i> Address:</strong> <span id="profileAddress">...</span>
+            <strong><i class="fas fa-fingerprint"></i> System ID:</strong> <span id="profileId"
+              style="font-family: monospace; color: #888;">...</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-branches" class="view-section fade-in">
+        <div class="section-card">
+          <h3 style="color: #2d3436;">Manage University Branches</h3>
+          <p>Add or remove branches available for student registration.</p>
+
+          <div
+            style="background: #f1f2f6; padding: 20px; border-radius: 8px; margin-bottom: 20px; display:flex; gap:10px; align-items: center;">
+            <input type="text" id="newBranchName" placeholder="Branch Name (e.g., Computer Science)"
+              style="margin:0; flex: 2;">
+            <input type="text" id="newBranchCode" placeholder="Code (e.g., CS)" style="margin:0; flex: 1;">
+            <button onclick="addBranch()" class="btn" style="flex: 0;">Add Branch</button>
+          </div>
+
+          <h3>Existing Branches</h3>
+          <div style="overflow-x: auto;">
+            <table id="branchTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Code</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEW ADMIN VIEW INTEGRATED -->
+      <div id="view-admin" class="view-section fade-in">
+        <div class="section-card">
+          <h2>Admin Panel</h2>
+          <div class="admin-controls"
+            style="display: flex; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <button class="btn" onclick="showAdminSection('faculty')">Faculty View</button>
+            <button class="btn" onclick="showAdminSection('student')">Student View</button>
+            <button class="btn" onclick="showAdminSection('subjects')">Manage Subjects</button>
+          </div>
+
+          <!-- Faculty View -->
+          <div id="faculty-section" class="admin-sub-view">
+            <h3>Branch-wise Faculty</h3>
+            <div class="filter-group" style="margin: 15px 0;">
+              <label>Select Branch:</label>
+              <select id="faculty-branch-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                <option value="">All Branches</option>
+              </select>
+            </div>
+            <div id="faculty-results"></div>
+          </div>
+
+          <!-- Student View -->
+          <div id="student-section" class="admin-sub-view" style="display:none;">
+            <h3>Year-wise Students</h3>
+            <div class="filter-group" style="margin: 15px 0; display: flex; gap: 15px;">
+              <div>
+                <label>Select Branch:</label>
+                <select id="student-branch-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                  <option value="">All Branches</option>
+                </select>
+              </div>
+              <div>
+                <label>Select Year:</label>
+                <select id="student-year-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                  <option value="">All Years</option>
+                </select>
+              </div>
+            </div>
+            <div id="student-results"></div>
+          </div>
+
+          <!-- Subjects View -->
+          <div id="subjects-section" class="admin-sub-view" style="display:none;">
+            <h3>Evaluate & Manage Subjects</h3>
+
+            <!-- Add Form -->
+            <div style="background: #f1f2f6; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+              <h4>Add New Subject</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 10px;">
+                <input type="text" id="subName" placeholder="Subject Name" style="margin:0">
+                <input type="text" id="subCode" placeholder="Code (e.g. CS101)" style="margin:0">
+                <select id="subBranch" style="margin:0; padding: 8px;">
+                  <option value="CS">CS</option>
+                  <option value="ME">ME</option>
+                  <option value="CE">CE</option>
+                  <option value="EE">EE</option>
+                </select>
+                <select id="subYear" style="margin:0; padding: 8px;">
+                  <option value="1">Year 1</option>
+                  <option value="2">Year 2</option>
+                  <option value="3">Year 3</option>
+                  <option value="4">Year 4</option>
+                </select>
+                <button onclick="addSubject()" class="btn" style="background:#0984e3;">Add</button>
+              </div>
+            </div>
+
+            <!-- List -->
+            <div class="filter-group" style="margin-bottom: 15px;">
+              <label>Filter by Branch:</label>
+              <select id="subject-filter-branch" onchange="loadSubjects()">
+                <option value="">All</option>
+                <option value="CS">CS</option>
+                <option value="ME">ME</option>
+                <option value="CE">CE</option>
+                <option value="EE">EE</option>
+              </select>
+            </div>
+            <div id="subjects-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Student Details Modal -->
+  <div id="studentModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+    <div
+      style="background:white; width:90%; max-width:600px; margin: 50px auto; padding:20px; border-radius:8px; position:relative;">
+      <button onclick="document.getElementById('studentModal').style.display='none'"
+        style="position:absolute; right:15px; top:10px; border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
+      <h2 id="modalStudentName">Student Details</h2>
+      <div id="modalContent"></div>
+
+      <div style="margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
+        <h3>Fee Management</h3>
+        <p>Current Status: <strong id="modalFeeStatus">--</strong></p>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <select id="newFeeStatus" style="padding:5px;">
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Overdue">Overdue</option>
+          </select>
+          <button id="updateFeeBtn" class="btn" onclick="updateFeeStatus()">Update Status</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -89,14 +332,41 @@
   <script src="js/attendance.js"></script>
   <script src="js/marks.js"></script>
   <script src="js/notice.js"></script>
+  <script src="js/notice.js"></script>
+  <script src="js/admin.js"></script>
   <script>
+    // Navigation Logic
+    function switchView(viewName) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById(`view-${viewName}`).classList.add('active');
+
+      document.querySelectorAll('.sidebar nav div').forEach(el => el.classList.remove('active-nav'));
+      document.getElementById(`nav-${viewName}`).classList.add('active-nav');
+
+      // Update Header
+      const titles = {
+        'dashboard': 'Dashboard',
+        'courses': 'My Courses',
+        'schedule': 'Schedule',
+        'profile': 'My Profile',
+        'branches': 'Manage Branches',
+        'fees': 'My Fee Status',
+        'admin': 'Admin Panel'
+      };
+      document.querySelector('#headerInfo h1').innerText = titles[viewName];
+
+      if (viewName === 'branches') {
+        // Refresh branches when entering the view
+        if (typeof loadAdminBranches === 'function') loadAdminBranches();
+      }
+    }
+
     function logout() {
       localStorage.removeItem('token');
       document.body.style.opacity = '0';
-      setTimeout(() => {
-         window.location.href = 'login.html';
-      }, 300);
+      setTimeout(() => { window.location.href = 'login.html'; }, 300);
     }
   </script>
 </body>
+
 </html>

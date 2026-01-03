@@ -1,28 +1,47 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Login</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
   <div class="hero-bg">
     <div class="hero-overlay"></div>
     <div class="auth-card fade-in">
       <h2 style="color: #2d3436;">Student Login</h2>
       <p style="color: #b2bec3; font-size: 0.9em; margin-bottom: 20px;">Enter your credentials to continue</p>
-      
+
       <form id="loginForm">
-        <input type="email" id="email" placeholder="Email Address" required>
-        <input type="password" id="password" placeholder="Password" required>
+        <input type="text" id="email" placeholder="Email or Admission Number" required>
+        <div style="position: relative;">
+          <input type="password" id="password" placeholder="Password" required
+            style="width: 100%; padding-right: 40px;">
+          <span id="togglePassword"
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa;">
+            👁️
+          </span>
+        </div>
         <button type="submit" class="btn" style="width:100%; margin-top: 10px;">Sign In</button>
       </form>
 
-        <div style="margin-top: 25px;">
-          <a href="index.html" style="color: #6c5ce7; font-size: 0.9em; font-weight: 600; margin-right: 15px;">Home</a>
-          <a href="register.html" style="color: #6c5ce7; font-size: 0.9em; font-weight: 600;">Create Account</a>
-        </div>
+      <div style="margin-top: 25px;">
+        <a href="index.html" style="color: #6c5ce7; font-size: 0.9em; font-weight: 600; margin-right: 15px;">Home</a>
+        <a href="register.html" style="color: #6c5ce7; font-size: 0.9em; font-weight: 600;">Create Account</a>
+      </div>
     </div>
   </div>
   <script src="js/auth.js"></script>
+  <script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    togglePassword.addEventListener('click', function (e) {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      this.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+  </script>
 </body>
+
 </html>

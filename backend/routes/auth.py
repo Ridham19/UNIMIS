@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.user import find_user_by_email, create_user
 import jwt
 import datetime
+import re # Regex for phone validation
 
 auth_bp = Blueprint('auth', __name__)
 SECRET_KEY = "your_secret_key"
@@ -10,22 +11,50 @@ SECRET_KEY = "your_secret_key"
 def register():
     data = request.json
     
-    # Check if user already exists
     if find_user_by_email(request.db, data['email']):
         return jsonify({'error': 'Email already exists'}), 400
 
-    # Create new user (is_approved will be False by default)
-    create_user(request.db, data['name'], data['email'], data['password'], data['role'])
+    # --- 1. Phone Validation ---
+    phone = data.get('phone', '')
+    if not re.match(r'^\d{10}$', phone):
+        return jsonify({'error': 'Mobile number must be exactly 10 digits'}), 400
+
+    # Extract info
+    additional_info = {
+        "phone": phone,
+        "dob": data.get('dob', ''),
+        "address": data.get('address', ''),
+        "branch_code": data.get('branch_code', '') # Save code (CS)
+    }
+
+    create_user(
+        request.db, 
+        data['name'], 
+        data['email'], 
+        data['password'], 
+        data['role'],
+        additional_info
+    )
     
     return jsonify({'message': 'Registration successful. Please wait for approval.'})
 
+# ... (Keep login route same as before) ...
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    user = find_user_by_email(request.db, data['email'])
+    identifier = data['email'] # Frontend sends both as 'email' field or we can change js. Let's keep field name 'email' in JS for simplicity or change it.
+    
+    # Check if identifier looks like Admission Number (Starts with 20 and has letters/numbers)
+    # Simple heuristic: If it has '@', treat as email.
+    
+    user = None
+    if '@' in identifier:
+        user = find_user_by_email(request.db, identifier)
+    else:
+        # Search by admission_number
+        user = request.db.users.find_one({"admission_number": identifier})
 
     if user and user['password'] == data['password']:
-        # --- NEW: Check Approval Status ---
         if not user.get('is_approved', False):
             return jsonify({'error': 'Account not approved yet. Contact your Administrator/Teacher.'}), 403
 

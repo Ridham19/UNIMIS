@@ -16,3 +16,37 @@ def get(student_id):
     for record in records:
         record['_id'] = str(record['_id'])
     return jsonify(records)
+
+from utils.pdf_generator import generate_student_result
+from flask import send_file
+
+@marks_bp.route('/marks/pdf/<student_id>', methods=['GET'])
+def download_pdf(student_id):
+    db = request.db
+    # 1. Get Student Info
+    from models.user import get_user_by_id
+    from bson import ObjectId
+    
+    student = db.users.find_one({"_id": ObjectId(student_id)})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+        
+    # 2. Get Branch Name
+    branch_code = student.get('branch_code')
+    branch_name = branch_code
+    if branch_code:
+        b = db.branches.find_one({"code": branch_code})
+        if b: branch_name = b['name']
+        
+    # 3. Get Marks
+    marks = list(get_marks_by_student(db, student_id))
+    
+    # 4. Generate PDF
+    pdf_buffer = generate_student_result(student, marks, branch_name)
+    
+    return send_file(
+        pdf_buffer,
+        as_attachment=True,
+        download_name=f"Result_{student.get('admission_number', 'student')}.pdf",
+        mimetype='application/pdf'
+    )

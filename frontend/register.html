@@ -11,38 +11,97 @@
       <h2 style="color: #2d3436;">Create Account</h2>
       <p style="color: #b2bec3; font-size: 0.9em; margin-bottom: 20px;">Join the portal</p>
       
-      <form id="registerForm">
+      <form id="registerForm" style="text-align: left;">
         <input type="text" id="name" placeholder="Full Name" required>
         <input type="email" id="email" placeholder="Email Address" required>
         <input type="password" id="password" placeholder="Password" required>
         
+        <label style="font-size: 0.8em; color: #666; margin-top: 10px; display: block;">Date of Birth (Past Only)</label>
+        <input type="date" id="dob" required>
+
+        <input type="tel" id="phone" placeholder="Phone Number (10 digits)" pattern="\d{10}" maxlength="10" title="Must be exactly 10 digits" required>
+        
+        <input type="text" id="address" placeholder="Residential Address" required>
+
         <label style="display:block; text-align:left; color:#666; font-size:0.9em; margin-top:10px;">I am a:</label>
-        <select id="role">
+        <select id="role" onchange="toggleBranchSelection()">
           <option value="student">Student</option>
           <option value="teacher">Teacher</option>
         </select>
 
+        <div id="branchDiv">
+            <label style="font-size: 0.8em; color: #666; margin-top: 10px; display: block;">Select Branch</label>
+            <select id="branchCode">
+                <option value="" disabled selected>Loading branches...</option>
+            </select>
+        </div>
+
         <button type="submit" class="btn" style="width:100%; margin-top: 10px;">Register</button>
       </form>
 
-      <div style="margin-top: 25px;">
+      <div style="margin-top: 25px; text-align: center;">
         <a href="login.html" style="color: #6c5ce7; font-size: 0.9em; font-weight: 600;">Already have an account? Login</a>
       </div>
     </div>
   </div>
 
   <script>
+    // 1. Set Max Date for DOB to Today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dob').setAttribute('max', today);
+
+    // 2. Load Branches on Startup
+    async function loadBranches() {
+        const res = await fetch('/api/branches');
+        const branches = await res.json();
+        const select = document.getElementById('branchCode');
+        select.innerHTML = '<option value="" disabled selected>Select a Branch</option>';
+        branches.forEach(b => {
+            select.innerHTML += `<option value="${b.code}">${b.name} (${b.code})</option>`;
+        });
+    }
+    loadBranches();
+
+    // 3. Toggle Branch visibility
+    function toggleBranchSelection() {
+        const role = document.getElementById('role').value;
+        const div = document.getElementById('branchDiv');
+        div.style.display = (role === 'student') ? 'block' : 'none';
+    }
+
+    // 4. Submit Logic
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      
       const role = document.getElementById('role').value;
+      const branch_code = (role === 'student') ? document.getElementById('branchCode').value : '';
+
+      // Frontend Mobile Validation backup
+      const phone = document.getElementById('phone').value;
+      if (phone.length !== 10 || isNaN(phone)) {
+          alert("Phone number must be exactly 10 digits.");
+          return;
+      }
+      if (role === 'student' && !branch_code) {
+          alert("Please select a branch.");
+          return;
+      }
+
+      const payload = {
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value,
+          role: role,
+          dob: document.getElementById('dob').value,
+          phone: phone,
+          address: document.getElementById('address').value,
+          branch_code: branch_code
+      };
 
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role })
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
