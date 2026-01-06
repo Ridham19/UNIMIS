@@ -6,15 +6,28 @@ marks_bp = Blueprint('marks', __name__)
 @marks_bp.route('/marks', methods=['POST'])
 def add():
     data = request.json
-    result = add_marks(request.db, data['student_id'], data['subject'], data['score'])
-    return jsonify({'inserted_id': str(result.inserted_id)})
+    # Expects: student_id, subject_code, score
+    # Optional: subject_name, semester (default 1), max_marks
+    
+    result = add_marks(
+        request.db, 
+        data['student_id'], 
+        data.get('subject_code', data.get('subject')), # Support both 'subject' (legacy) and 'subject_code'
+        data.get('subject_name', data.get('subject')), 
+        data.get('semester', 1), # Default to 1 if not provided? Or look up student? Default 1 for now.
+        data['score']
+    )
+    
+    # UpdateResult object from update_one
+    if result.upserted_id:
+        return jsonify({'message': 'Marks added (New Record)', 'id': str(result.upserted_id)})
+    else:
+        return jsonify({'message': 'Marks updated'})
 
 @marks_bp.route('/marks/<student_id>', methods=['GET'])
 def get(student_id):
     records = get_marks_by_student(request.db, student_id)
-    # Fix: Convert ObjectId to string
-    for record in records:
-        record['_id'] = str(record['_id'])
+    # records is now a simple list of dicts, no _id to convert
     return jsonify(records)
 
 from utils.pdf_generator import generate_student_result

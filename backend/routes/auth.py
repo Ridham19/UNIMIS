@@ -61,6 +61,7 @@ def login():
         token = jwt.encode({
             'user_id': str(user['_id']),
             'role': user['role'],
+            'branch_code': user.get('branch_code', ''),
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)
         }, SECRET_KEY, algorithm='HS256')
         

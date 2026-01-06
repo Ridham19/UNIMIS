@@ -1,0 +1,170 @@
+--- SUBJECT MAPPING (Branch -> Semester -> Subjects) ---
+# Format: Code: Name [LAB]
+
+COMPUTER SCIENCE (CS)
+  Semester 1:
+    - CS101: Intro to Programming [LAB]
+    - CS102: Digital Logic
+    - CS103: Mathematics I
+    - CS104: Soft Skills
+  Semester 2:
+    - CS105: Object Oriented Programming [LAB]
+    - CS106: Maths
+    - CS107: English Communication
+    - CS108: Basic Electronics [LAB]
+  Semester 3:
+    - CS201: Data Structures [LAB]
+    - CS202: Computer Organization
+    - CS203: Mathematics II
+    - CS204: Ethics in IT
+  Semester 4:
+    - CS205: Algorithms [LAB]
+    - CS206: Operating Systems [LAB]
+    - CS207: Database Management
+    - CS208: Computer Networks
+  Semester 5:
+    - CS301: Web Technologies [LAB]
+    - CS302: Software Engineering
+    - CS303: Theory of Computation
+    - CS304: AI Basics
+  Semester 6:
+    - CS305: Machine Learning [LAB]
+    - CS306: Compiler Design [LAB]
+    - CS307: Cloud Computing
+    - CS308: Information Security
+  Semester 7:
+    - CS401: Big Data [LAB]
+    - CS402: Blockchain
+    - CS403: Project Phase I
+    - CS404: Elective I
+  Semester 8:
+    - CS405: Internet of Things [LAB]
+    - CS406: Deep Learning
+    - CS407: Project Phase II
+    - CS408: Elective II
+
+MECHANICAL (ME)
+  Semester 1:
+    - ME101: Engineering Mechanics [LAB]
+    - ME102: Engineering Drawing [LAB]
+    - ME103: Mathematics I
+    - ME104: Physics
+  Semester 2:
+    - ME105: Thermodynamics
+    - ME106: Material Science [LAB]
+    - ME107: Chemistry
+    - ME108: Workshop Tech [LAB]
+  Semester 3:
+    - ME201: Fluid Mechanics [LAB]
+    - ME202: Strength of Materials
+    - ME203: Mathematics II
+    - ME204: Machine Design I
+  Semester 4:
+    - ME205: Kinematics of Machines [LAB]
+    - ME206: Manufacturing Process [LAB]
+    - ME207: Applied Thermo
+    - ME208: Machine Design II
+  Semester 5:
+    - ME301: Heat Transfer [LAB]
+    - ME302: Dynamics of Machines
+    - ME303: IC Engines
+    - ME304: Turbo Machines [LAB]
+  Semester 6:
+    - ME305: CAD/CAM [LAB]
+    - ME306: Finite Element Analysis
+    - ME307: Refrigeration
+    - ME308: Industrial Eng
+  Semester 7:
+    - ME401: Robotics [LAB]
+    - ME402: Power Plant Eng
+    - ME403: Project Phase I
+    - ME404: Mechatronics
+  Semester 8:
+    - ME405: Automobile Eng [LAB]
+    - ME406: Renewable Energy
+    - ME407: Project Phase II
+    - ME408: Operations Research
+
+CIVIL (CE)
+  Semester 1:
+    - CE101: Mechanics of Solids [LAB]
+    - CE102: Engineering Drawing
+    - CE103: Mathematics I
+    - CE104: Physics
+  Semester 2:
+    - CE105: Surveying [LAB]
+    - CE106: Building Materials [LAB]
+    - CE107: Chemistry
+    - CE108: Geology
+  Semester 3:
+    - CE201: Structural Analysis I [LAB]
+    - CE202: Fluid Mechanics
+    - CE203: Mathematics II
+    - CE204: Concrete Tech [LAB]
+  Semester 4:
+    - CE205: Soil Mechanics [LAB]
+    - CE206: Hydraulics [LAB]
+    - CE207: Structural Analysis II
+    - CE208: Transportation Eng
+  Semester 5:
+    - CE301: Design of RC Structures [LAB]
+    - CE302: Environmental Eng I
+    - CE303: Hydrology
+    - CE304: Foundation Eng
+  Semester 6:
+    - CE305: Design of Steel Structures [LAB]
+    - CE306: Environmental Eng II [LAB]
+    - CE307: Construction Mgmt
+    - CE308: Highway Eng
+  Semester 7:
+    - CE401: Irrigation Eng [LAB]
+    - CE402: Quantity Surveying
+    - CE403: Project Phase I
+    - CE404: Remote Sensing
+  Semester 8:
+    - CE405: Earthquake Eng [LAB]
+    - CE406: Urban Planning
+    - CE407: Project Phase II
+    - CE408: Bridge Eng
+
+ELECTRICAL (EE)
+  Semester 1:
+    - EE101: Basic Electrical [LAB]
+    - EE102: Circuit Theory
+    - EE103: Mathematics I
+    - EE104: Physics
+  Semester 2:
+    - EE105: Analog Electronics [LAB]
+    - EE106: Digital Logic [LAB]
+    - EE107: Chemistry
+    - EE108: Signals & Systems
+  Semester 3:
+    - EE201: Network Analysis [LAB]
+    - EE202: Electrical Machines I [LAB]
+    - EE203: Mathematics II
+    - EE204: EMT
+  Semester 4:
+    - EE205: Power Systems I
+    - EE206: Electrical Machines II [LAB]
+    - EE207: Control Systems [LAB]
+    - EE208: Measurements
+  Semester 5:
+    - EE301: Power Electronics [LAB]
+    - EE302: Power Systems II
+    - EE303: Microprocessors [LAB]
+    - EE304: Comm Systems
+  Semester 6:
+    - EE305: Switchgear & Protection [LAB]
+    - EE306: DSP [LAB]
+    - EE307: High Voltage Eng
+    - EE308: Renewable Energy
+  Semester 7:
+    - EE401: Electric Drives [LAB]
+    - EE402: Smart Grid
+    - EE403: Project Phase I
+    - EE404: AI in Power
+  Semester 8:
+    - EE405: HVDC Systems [LAB]
+    - EE406: Energy Management
+    - EE407: Project Phase II
+    - EE408: FACTs

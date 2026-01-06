@@ -263,11 +263,14 @@ async function loadSchedule(userId) {
       } else {
         classes.forEach(c => {
           const bgColor = c.type === 'break' ? '#ffeb3b40' : '#e3f2fd';
-          const icon = c.type === 'break' ? '☕' : '📚';
+          // User requested removal of emojis
           html += `
                         <div style="background:${bgColor}; padding:8px; border-radius:4px; font-size:0.9em; border-left: 3px solid #ccc;">
                             <div style="font-weight:bold; font-size:0.85em; color:#555;">${c.time}</div>
-                            <div style="margin-top:2px;">${icon} ${c.subject}</div>
+                            <div style="margin-top:2px;">${c.subject}</div>
+                             <div style="font-size:0.8em; color:#666; margin-top:3px;">
+                                <i class="fas fa-user-tie"></i> ${c.teacher || 'Faculty'}
+                            </div>
                         </div>
                     `;
         });
@@ -386,11 +389,12 @@ async function loadCourses(userId) {
 
     let html = '<div class="cards-grid">';
     courses.forEach(c => {
+      const labBadge = c.has_lab ? '<span style="background:#e84393; color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; margin-left:5px;">LAB</span>' : '';
       html += `
                 <div class="card">
-                    <h3>${c.name}</h3>
+                    <h3>${c.name} ${labBadge}</h3>
                     <p><strong>Code:</strong> ${c.code}</p>
-                    <p><strong>Branch:</strong> ${c.branch_code} | <strong>Year:</strong> ${c.year}</p>
+                    <p><strong>Branch:</strong> ${c.branch_code} | <strong>Semester:</strong> ${c.semester}</p>
                 </div>
              `;
     });
@@ -399,6 +403,5 @@ async function loadCourses(userId) {
 
   } catch (e) {
     console.error("Courses Error", e);
-
   }
 }

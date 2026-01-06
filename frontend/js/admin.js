@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadDropdowns();
         document.getElementById('faculty-branch-select').addEventListener('change', loadFaculty);
         document.getElementById('student-branch-select').addEventListener('change', loadStudents);
-        document.getElementById('student-year-select').addEventListener('change', loadStudents);
+        document.getElementById('student-semester-select').addEventListener('change', loadStudents);
 
         loadFaculty();
     }
@@ -23,6 +23,7 @@ function showAdminSection(section) {
 
     if (section === 'student') loadStudents();
     else if (section === 'subjects') loadSubjects();
+    else if (section === 'notices') { /* Do nothing specific, just show form */ }
     else loadFaculty();
 }
 
@@ -38,7 +39,7 @@ async function loadDropdowns() {
     try {
         const data = await fetch_with_auth('/api/admin/stats');
         const branches = data.branches;
-        const years = data.years;
+        // const years = data.years; // Legacy
 
         // Faculty Branch Select
         const fSelect = document.getElementById('faculty-branch-select');
@@ -60,15 +61,15 @@ async function loadDropdowns() {
             sSelect.appendChild(opt);
         });
 
-        // Student Year Select
-        const ySelect = document.getElementById('student-year-select');
-        ySelect.innerHTML = '<option value="">All Years</option>';
-        years.forEach(y => {
+        // Student Semester Select (1-8)
+        const semSelect = document.getElementById('student-semester-select');
+        semSelect.innerHTML = '<option value="">All Semesters</option>';
+        for (let i = 1; i <= 8; i++) {
             const opt = document.createElement('option');
-            opt.value = y;
-            opt.textContent = y;
-            ySelect.appendChild(opt);
-        });
+            opt.value = i;
+            opt.textContent = `Semester ${i}`;
+            semSelect.appendChild(opt);
+        }
 
     } catch (err) {
         console.error("Error loading stats", err);
@@ -86,16 +87,15 @@ async function loadFaculty() {
 
 async function loadStudents() {
     const branch = document.getElementById('student-branch-select').value;
-    const year = document.getElementById('student-year-select').value;
+    const semester = document.getElementById('student-semester-select').value;
 
     let url = '/api/admin/students-by-year?';
     if (branch) url += `branch=${branch}&`;
-    if (year) url += `year=${year}`;
-
+    if (semester) url += `semester=${semester}`; // Renamed param to match intent
 
     const students = await fetch_with_auth(url);
     // Add Views/Action logic
-    renderAdminTable('student-results', students, ['name', 'email', 'admission_number', 'branch_code', 'admission_year'], (item) => {
+    renderAdminTable('student-results', students, ['name', 'email', 'admission_number', 'branch_code', 'current_semester'], (item) => {
         return `<button class="btn" style="padding:5px 10px; font-size:0.8em;" onclick="viewStudent('${item._id}')">View/Edit</button>`;
     });
 }
@@ -107,14 +107,15 @@ async function loadSubjects() {
     if (branch && branch !== 'All') url += `?branch=${branch}`;
 
     const subjects = await fetch_with_auth(url);
-    renderAdminTable('subjects-list', subjects, ['name', 'code', 'branch_code', 'year']);
+    // Changed year to semester in table display
+    renderAdminTable('subjects-list', subjects, ['name', 'code', 'branch_code', 'semester']);
 }
 
 async function addSubject() {
     const name = document.getElementById('subName').value;
     const code = document.getElementById('subCode').value;
     const branch_code = document.getElementById('subBranch').value;
-    const year = document.getElementById('subYear').value;
+    const semester = document.getElementById('subSemester').value;
 
     if (!name || !code) return alert("Fill all fields");
 
@@ -122,7 +123,7 @@ async function addSubject() {
     const res = await fetch('/api/subjects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ name, code, branch_code, year })
+        body: JSON.stringify({ name, code, branch_code, semester })
     });
 
     if (res.ok) {
@@ -189,7 +190,7 @@ async function viewStudent(studentId) {
         document.getElementById('modalContent').innerHTML = `
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Admission No:</strong> ${user.admission_number}</p>
-            <p><strong>Branch/Year:</strong> ${user.branch_code} - ${user.admission_year}</p>
+            <p><strong>Branch/Semester:</strong> ${user.branch_code} - Sem ${user.current_semester || '?'}</p>
             <hr>
             <p><strong>Fees Total:</strong> ${fee.total || 0} INR</p>
         `;
@@ -225,5 +226,38 @@ async function updateFeeStatus() {
         viewStudent(currentEditingStudentId); // Refresh modal
     } else {
         alert("Update Failed");
+    }
+}
+
+async function postNotice() {
+    const title = document.getElementById('noticeTitle').value;
+    const content = document.getElementById('noticeContent').value;
+    const targets = Array.from(document.querySelectorAll('.notice-target:checked')).map(el => el.value);
+
+    if (!title || !content || targets.length === 0) {
+        return alert("Please fill all fields and select at least one target group.");
+    }
+
+    const token = localStorage.getItem('token');
+    const res = await fetch('/api/notices', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            title,
+            content,
+            visible_to: targets
+        })
+    });
+
+    if (res.ok) {
+        alert("Notice Posted Successfully!");
+        document.getElementById('noticeTitle').value = '';
+        document.getElementById('noticeContent').value = '';
+        // Optionally switch view or reload notices if visible
+    } else {
+        alert("Failed to post notice.");
     }
 }

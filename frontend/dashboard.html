@@ -5,7 +5,7 @@
   <title>Dashboard | UNIMIS</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     /* SPA View Logic */
@@ -98,25 +98,83 @@
               <div id="attendanceData" style="margin-top: 15px;">Loading...</div>
             </div>
             <div class="section-card">
-              <h3 style="color: #00b894;"><i class="fas fa-trophy"></i> Marks</h3>
+              <h3 style="color: #00b894;"><i class="fas fa-trophy"></i> Results & Marks</h3>
               <div id="marksData" style="margin-top: 15px;">Loading...</div>
+
+              <!-- Past Results -->
+              <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                <h4 style="font-size: 0.9em; margin-bottom: 10px;">Archived Results</h4>
+                <div style="display: flex; gap: 10px;">
+                  <select id="pastSemSelect" style="padding: 5px; flex: 1;">
+                    <option value="">Select Semester</option>
+                  </select>
+                  <button onclick="downloadMarksheet()" class="btn" style="background: #6c5ce7; font-size: 0.8em;">
+                    <i class="fas fa-download"></i> View PDF
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div id="teacherSection" style="display:none;">
           <div class="section-card">
-            <h3 style="color: #0984e3;"><i class="fas fa-edit"></i> Mark Attendance</h3>
-            <form id="markAttendanceForm"
-              style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 15px; align-items: center; margin-top: 15px;">
-              <input type="text" id="studentId" placeholder="Student ID" required style="margin:0;">
-              <input type="date" id="date" required style="margin:0;">
-              <select id="status" style="margin:0;">
-                <option value="present">Present</option>
-                <option value="absent">Absent</option>
-              </select>
-              <button type="submit" class="btn">Save</button>
-            </form>
+            <h3 style="color: #0984e3; margin-bottom: 20px;"><i class="fas fa-chalkboard-teacher"></i> Classroom
+              Management</h3>
+
+            <div
+              style="background: #f8f9fa; padding: 25px; border-radius: 12px; border: 1px solid #e9ecef; margin-bottom: 25px;">
+              <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 20px; align-items: end;">
+                <div>
+                  <label style="display:block; margin-bottom:8px; font-weight:600; color:#555;">Select Subject</label>
+                  <select id="teachSubjectSelect"
+                    style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; margin:0;">
+                    <option value="">Loading subjects...</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; margin-bottom:8px; font-weight:600; color:#555;">Date</label>
+                  <input type="date" id="teachDate"
+                    style="width:100%; padding:11px; border-radius:8px; border:1px solid #ccc; margin:0;">
+                </div>
+                <div>
+                  <button onclick="loadClassList()" class="btn"
+                    style="background: #0984e3; height: 46px; padding: 0 30px; border-radius:8px;">
+                    <i class="fas fa-users"></i> Load Class
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="attendanceListContainer" style="display:none; animation: fadeIn 0.5s;">
+              <h4 id="classHeader"
+                style="margin-bottom: 20px; color:#2d3436; font-size:1.2em; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                Student List</h4>
+
+              <div
+                style="overflow-x: auto; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
+                <table class="styled-table" style="width:100%;">
+                  <thead>
+                    <tr style="background:#f9f9f9;">
+                      <th style="width: 20%;">Admission No</th>
+                      <th style="width: 40%;">Student Name</th>
+                      <th style="text-align:center;">Attendance</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attendanceTableBody">
+                    <!-- Rows -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="margin-top: 25px; text-align: right;">
+                <button onclick="submitBulkAttendance()" class="btn"
+                  style="background: #00b894; padding: 12px 35px; font-size: 1.1em; border-radius: 8px;">
+                  <i class="fas fa-check-circle"></i> Save Attendance
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -216,7 +274,7 @@
       </div>
 
       <!-- NEW ADMIN VIEW INTEGRATED -->
-      <div id="view-admin" class="view-section fade-in">
+      <div id="view-admin" class="view-section" style="color: #2d3436;">
         <div class="section-card">
           <h2>Admin Panel</h2>
           <div class="admin-controls"
@@ -224,6 +282,7 @@
             <button class="btn" onclick="showAdminSection('faculty')">Faculty View</button>
             <button class="btn" onclick="showAdminSection('student')">Student View</button>
             <button class="btn" onclick="showAdminSection('subjects')">Manage Subjects</button>
+            <button class="btn" onclick="showAdminSection('notices')">Post Notice</button>
           </div>
 
           <!-- Faculty View -->
@@ -249,9 +308,10 @@
                 </select>
               </div>
               <div>
-                <label>Select Year:</label>
-                <select id="student-year-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                  <option value="">All Years</option>
+                <label>Select Semester:</label>
+                <select id="student-semester-select" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                  <option value="">All Semesters</option>
+                  <!-- Populated by JS -->
                 </select>
               </div>
             </div>
@@ -274,11 +334,15 @@
                   <option value="CE">CE</option>
                   <option value="EE">EE</option>
                 </select>
-                <select id="subYear" style="margin:0; padding: 8px;">
-                  <option value="1">Year 1</option>
-                  <option value="2">Year 2</option>
-                  <option value="3">Year 3</option>
-                  <option value="4">Year 4</option>
+                <select id="subSemester" style="margin:0; padding: 8px;">
+                  <option value="1">Sem 1</option>
+                  <option value="2">Sem 2</option>
+                  <option value="3">Sem 3</option>
+                  <option value="4">Sem 4</option>
+                  <option value="5">Sem 5</option>
+                  <option value="6">Sem 6</option>
+                  <option value="7">Sem 7</option>
+                  <option value="8">Sem 8</option>
                 </select>
                 <button onclick="addSubject()" class="btn" style="background:#0984e3;">Add</button>
               </div>
@@ -296,77 +360,106 @@
               </select>
             </div>
             <div id="subjects-list"></div>
+
+            <!-- Notices View -->
+            <div id="notices-section" class="admin-sub-view" style="display:none;">
+              <h3>Create Campus Notice</h3>
+              <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
+                <div style="margin-bottom: 15px;">
+                  <label>Title</label>
+                  <input type="text" id="noticeTitle" placeholder="e.g. Exam Schedule Released" style="margin-top:5px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <label>Message</label>
+                  <textarea id="noticeContent" rows="4" placeholder="Enter notice details..."
+                    style="width:100%; padding:10px; border-radius:8px; border:2px solid #dfe6e9; font-family:inherit;"></textarea>
+                </div>
+                <div style="margin-bottom: 20px;">
+                  <label>Visible To:</label>
+                  <div style="margin-top:10px; display:flex; gap:20px;">
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                      <input type="checkbox" value="student" class="notice-target" checked
+                        style="width:auto; margin:0;"> Students
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                      <input type="checkbox" value="teacher" class="notice-target" checked
+                        style="width:auto; margin:0;"> Teachers
+                    </label>
+                  </div>
+                </div>
+                <button onclick="postNotice()" class="btn" style="background: var(--accent-color);">Post Notice</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div id="studentModal"
+      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+      <div
+        style="background:white; width:90%; max-width:600px; margin: 50px auto; padding:20px; border-radius:8px; position:relative;">
+        <button onclick="document.getElementById('studentModal').style.display='none'"
+          style="position:absolute; right:15px; top:10px; border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
+        <h2 id="modalStudentName">Student Details</h2>
+        <div id="modalContent"></div>
+
+        <div style="margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
+          <h3>Fee Management</h3>
+          <p>Current Status: <strong id="modalFeeStatus">--</strong></p>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <select id="newFeeStatus" style="padding:5px;">
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+              <option value="Overdue">Overdue</option>
+            </select>
+            <button id="updateFeeBtn" class="btn" onclick="updateFeeStatus()">Update Status</button>
           </div>
         </div>
       </div>
-
     </div>
-  </div>
 
-  <!-- Student Details Modal -->
-  <div id="studentModal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-    <div
-      style="background:white; width:90%; max-width:600px; margin: 50px auto; padding:20px; border-radius:8px; position:relative;">
-      <button onclick="document.getElementById('studentModal').style.display='none'"
-        style="position:absolute; right:15px; top:10px; border:none; background:none; font-size:1.5em; cursor:pointer;">&times;</button>
-      <h2 id="modalStudentName">Student Details</h2>
-      <div id="modalContent"></div>
+    <script src="js/user.js"></script>
+    <script src="js/attendance.js"></script>
+    <script src="js/marks.js"></script>
+    <script src="js/notice.js"></script>
 
-      <div style="margin-top:20px; border-top:1px solid #eee; padding-top:10px;">
-        <h3>Fee Management</h3>
-        <p>Current Status: <strong id="modalFeeStatus">--</strong></p>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <select id="newFeeStatus" style="padding:5px;">
-            <option value="Paid">Paid</option>
-            <option value="Pending">Pending</option>
-            <option value="Overdue">Overdue</option>
-          </select>
-          <button id="updateFeeBtn" class="btn" onclick="updateFeeStatus()">Update Status</button>
-        </div>
-      </div>
-    </div>
-  </div>
+    <script src="js/admin.js"></script>
+    <script>
+      // Navigation Logic
+      function switchView(viewName) {
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        document.getElementById(`view-${viewName}`).classList.add('active');
 
-  <script src="js/user.js"></script>
-  <script src="js/attendance.js"></script>
-  <script src="js/marks.js"></script>
-  <script src="js/notice.js"></script>
-  <script src="js/notice.js"></script>
-  <script src="js/admin.js"></script>
-  <script>
-    // Navigation Logic
-    function switchView(viewName) {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById(`view-${viewName}`).classList.add('active');
+        document.querySelectorAll('.sidebar nav div').forEach(el => el.classList.remove('active-nav'));
+        document.getElementById(`nav-${viewName}`).classList.add('active-nav');
 
-      document.querySelectorAll('.sidebar nav div').forEach(el => el.classList.remove('active-nav'));
-      document.getElementById(`nav-${viewName}`).classList.add('active-nav');
+        // Update Header
+        const titles = {
+          'dashboard': 'Dashboard',
+          'courses': 'My Courses',
+          'schedule': 'Schedule',
+          'profile': 'My Profile',
+          'branches': 'Manage Branches',
+          'fees': 'My Fee Status',
+          'admin': 'Admin Panel'
+        };
+        document.querySelector('#headerInfo h1').innerText = titles[viewName];
 
-      // Update Header
-      const titles = {
-        'dashboard': 'Dashboard',
-        'courses': 'My Courses',
-        'schedule': 'Schedule',
-        'profile': 'My Profile',
-        'branches': 'Manage Branches',
-        'fees': 'My Fee Status',
-        'admin': 'Admin Panel'
-      };
-      document.querySelector('#headerInfo h1').innerText = titles[viewName];
-
-      if (viewName === 'branches') {
-        // Refresh branches when entering the view
-        if (typeof loadAdminBranches === 'function') loadAdminBranches();
+        if (viewName === 'branches') {
+          // Refresh branches when entering the view
+          if (typeof loadAdminBranches === 'function') loadAdminBranches();
+        }
       }
-    }
 
-    function logout() {
-      localStorage.removeItem('token');
-      document.body.style.opacity = '0';
-      setTimeout(() => { window.location.href = 'login.html'; }, 300);
-    }
-  </script>
+      function logout() {
+        localStorage.removeItem('token');
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = 'login.html'; }, 300);
+      }
+    </script>
 </body>
 
 </html>

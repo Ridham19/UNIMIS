@@ -51,7 +51,7 @@ def generate_student_result(student, marks, branch_name):
     total_max = 0
     
     for m in marks:
-        score = m.get('score', 0)
+        score = m.get('score', m.get('total', 0))
         max_m = 100 # m.get('total_marks', 100)
         total_score += score
         total_max += max_m
@@ -64,7 +64,10 @@ def generate_student_result(student, marks, branch_name):
         elif score >= 40: grade = 'D'; status = 'Pass'
         else: grade = 'F'; status = 'Fail'
         
-        marks_data.append([m.get('subject', 'Unknown'), str(score), str(max_m), grade, status])
+        # Robust Subject Name: try 'subject_name', then 'subject', then 'Unknown'
+        subj = m.get('subject_name', m.get('subject', 'Unknown'))
+        
+        marks_data.append([subj, str(score), str(max_m), grade, status])
     
     # Footer Row
     marks_data.append(["TOTAL", str(total_score), str(total_max), "", ""])
