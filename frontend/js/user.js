@@ -38,8 +38,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   // 4. Role-Based Dashboard Logic
   if (role === 'student') {
     document.getElementById('studentSection').style.display = 'block';
-    document.querySelectorAll('.student-only').forEach(el => el.style.display = 'block');
-    document.querySelectorAll('.academic-only').forEach(el => el.style.display = 'block');
+    document.querySelectorAll('.student-only').forEach(el => el.style.setProperty('display', 'flex', 'important'));
+    document.querySelectorAll('.academic-only').forEach(el => el.style.setProperty('display', 'flex', 'important'));
 
     if (typeof loadAttendance === 'function') loadAttendance(userId);
     if (typeof loadMarks === 'function') loadMarks(userId);
@@ -50,7 +50,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (role === 'teacher') {
     document.getElementById('teacherSection').style.display = 'block';
-    document.querySelectorAll('.academic-only').forEach(el => el.style.display = 'block');
+    document.querySelectorAll('.academic-only').forEach(el => el.style.setProperty('display', 'flex', 'important'));
 
     // Teachers approve Students
     loadPendingUsers('student');
@@ -59,11 +59,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (role === 'admin') {
     // Show Admin Menu Links
-    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+    document.querySelectorAll('.admin-only').forEach(el => el.style.setProperty('display', 'flex', 'important'));
     // Admins approve Teachers
     loadPendingUsers('teacher');
-    // Load Branch Data
-    loadAdminBranches();
+    // Load Branch Data - Removed
+    // loadAdminBranches();
   }
 
   // Load Notices (Everyone sees this)
@@ -123,60 +123,7 @@ async function approveUser(targetId) {
   }
 }
 
-/* --- Branch Management (Admin) --- */
-async function loadAdminBranches() {
-  const res = await fetch('/api/branches');
-  const branches = await res.json();
-  const tbody = document.querySelector('#branchTable tbody');
 
-  if (branches.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3">No branches found. Add one above.</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = branches.map(b => `
-        <tr>
-            <td>${b.name}</td>
-            <td><strong>${b.code}</strong></td>
-            <td>
-                <button onclick="deleteBranch('${b.code}')" class="btn btn-danger" style="padding:5px 10px; font-size:0.8em;">
-                    <i class="fas fa-trash"></i> Remove
-                </button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-async function addBranch() {
-  const name = document.getElementById('newBranchName').value;
-  const code = document.getElementById('newBranchCode').value;
-  if (!name || !code) return alert("Fill all fields");
-
-  const token = localStorage.getItem('token');
-  const res = await fetch('/api/branches', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ name, code })
-  });
-
-  if (res.ok) {
-    loadAdminBranches();
-    document.getElementById('newBranchName').value = '';
-    document.getElementById('newBranchCode').value = '';
-  } else {
-    alert("Error adding branch (Code might exist)");
-  }
-}
-
-async function deleteBranch(code) {
-  if (!confirm(`Delete branch ${code}?`)) return;
-  const token = localStorage.getItem('token');
-  await fetch(`/api/branches/${code}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  loadAdminBranches();
-}
 
 /* --- V3: Fees & Schedule --- */
 async function loadFees(userId) {

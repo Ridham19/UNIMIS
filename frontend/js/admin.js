@@ -23,7 +23,8 @@ function showAdminSection(section) {
 
     if (section === 'student') loadStudents();
     else if (section === 'subjects') loadSubjects();
-    else if (section === 'notices') { /* Do nothing specific, just show form */ }
+    else if (section === 'branches') loadAdminBranches();
+    else if (section === 'notices') { /* Do nothing */ }
     else loadFaculty();
 }
 
@@ -274,4 +275,60 @@ async function postNotice() {
         console.error("Post Notice Error:", e);
         alert("An unexpected error occurred: " + e.message);
     }
+}
+
+/* --- Branch Management (Moved from user.js) --- */
+async function loadAdminBranches() {
+    const res = await fetch(`${CONFIG.API_BASE}/branches`);
+    const branches = await res.json();
+    const tbody = document.querySelector('#branchTable tbody');
+
+    if (branches.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">No branches found. Add one above.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = branches.map(b => `
+        <tr>
+            <td>${b.name}</td>
+            <td><strong>${b.code}</strong></td>
+            <td>
+                <button onclick="deleteBranch('${b.code}')" class="btn btn-danger" style="padding:5px 10px; font-size:0.8em; background:#e74c3c;">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function addBranch() {
+    const name = document.getElementById('newBranchName').value;
+    const code = document.getElementById('newBranchCode').value;
+    if (!name || !code) return alert("Fill all fields");
+
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${CONFIG.API_BASE}/branches`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ name, code })
+    });
+
+    if (res.ok) {
+        loadAdminBranches();
+        document.getElementById('newBranchName').value = '';
+        document.getElementById('newBranchCode').value = '';
+        alert("Branch added successfully");
+    } else {
+        alert("Error adding branch (Code might exist)");
+    }
+}
+
+async function deleteBranch(code) {
+    if (!confirm(`Delete branch ${code}?`)) return;
+    const token = localStorage.getItem('token');
+    await fetch(`${CONFIG.API_BASE}/branches/${code}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    loadAdminBranches();
 }

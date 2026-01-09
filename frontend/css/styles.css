@@ -1,102 +1,140 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
   box-sizing: border-box;
 }
 
 :root {
-  /* --- Palette: Green Campus --- */
-  --bg-base: #f0f7f4;
-  --primary-gradient: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  --sidebar-bg: #ffffff;
-  /* Solid white to avoid transparency issues */
+  /* --- Palette: Modern Academic (Harvard/Enterprise) --- */
+  --bg-base: #f4f6f8;
+  /* Crisp Light Gray */
+  --primary-color: #1a237e;
+  /* Deep Royal Blue (Authority) */
+  --primary-light: #283593;
+  /* Slightly lighter blue for gradients/hovers */
+
+  --sidebar-bg: #1a237e;
+  /* Deep Blue Sidebar */
+  --sidebar-text: rgba(255, 255, 255, 0.7);
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+
   --text-main: #2d3436;
+  /* Dark Slate Grey */
   --text-muted: #636e72;
-  --accent-color: #27ae60;
-  --card-bg: rgba(255, 255, 255, 0.95);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+
+  --accent-color: #00b894;
+  /* Vibrant Teal for Actions/Success */
+  --accent-gold: #d4af37;
+  /* Metallic Gold for Prestige/Highlights */
+
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  /* Soft Elevation */
+
   --input-bg: #ffffff;
-  --border-color: #dfe6e9;
+  --border-color: #e0e0e0;
+
+  /* Retaining legacy variable name for compatibility but updating value */
+  --glass-shadow: 0 4px 20px rgba(26, 35, 126, 0.1);
+  --primary-gradient: linear-gradient(135deg, #1a237e 0%, #283593 100%);
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
+  /* Professional Font */
   margin: 0;
   padding: 0;
   background-color: var(--bg-base);
   color: var(--text-main);
   height: 100vh;
   overflow: hidden;
-  background-image: url('../images/bg_green.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  /* Main scroll is inside main-content */
+  /* Replaced background image with clean professional solid/subtle color */
+  background-image: none;
 }
 
-/* --- Layout --- */
+/* --- Layout (Preserved) --- */
 .container {
   display: flex;
   height: 100vh;
   width: 100vw;
-  background: rgba(240, 247, 244, 0.9);
-  /* Stronger overlay */
-  backdrop-filter: blur(3px);
+  background: transparent;
 }
 
-/* --- Sidebar --- */
+/* --- Sidebar (Premium Dark) --- */
 .sidebar {
   width: 280px;
-  background: var(--sidebar-bg);
+  background: linear-gradient(rgba(26, 35, 126, 0.95), rgba(26, 35, 126, 0.85)), url('https://source.unsplash.com/random/800x600/?university,building');
+  background-size: cover;
+  background-position: center;
   padding: 30px;
   display: flex;
   flex-direction: column;
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
   z-index: 100;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  border-right: none;
+  color: white;
+}
+
+.admin-only,
+.student-only,
+.academic-only {
+  display: none !important;
 }
 
 .sidebar h2 {
   font-weight: 700;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
+  /* Slightly tighter */
   margin-bottom: 40px;
-  color: var(--accent-color);
+  color: #fff;
+  /* White title */
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  letter-spacing: -0.5px;
+}
+
+/* Optional: Gold underline for the university name */
+.sidebar h2::after {
+  /* content: ''; display: block; width: ... */
 }
 
 .sidebar nav div {
-  padding: 15px 20px;
-  margin-bottom: 10px;
-  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  /* Professional curvature */
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--sidebar-text);
   font-weight: 500;
-  transition: all 0.3s ease;
-  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar nav div:hover {
-  background: #e8f5e9;
-  /* Light Green */
-  color: var(--accent-color);
-  transform: translateX(5px);
+  background: var(--sidebar-hover);
+  color: #fff;
+  transform: translateX(4px);
 }
 
 .sidebar nav div.active-nav {
-  background: #d5f5e3;
-  /* Solid Light Green */
-  color: #219150 !important;
-  /* Darker Green, Forced */
-  border-left-color: #219150;
-  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.15);
+  background: var(--sidebar-hover);
+  /* Glassy active */
+  color: #fff !important;
+  border-left-color: var(--accent-gold);
+  /* Gold stripe */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   font-weight: 600;
 }
 
 .sidebar nav div i {
-  width: 25px;
-  margin-right: 10px;
+  width: 24px;
+  margin-right: 12px;
   font-size: 1.1em;
+  text-align: center;
 }
 
 /* --- Main Content --- */
@@ -108,191 +146,256 @@ body {
   position: relative;
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling - Thinner, cleaner */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(39, 174, 96, 0.5);
-  /* Green thumb */
-  border-radius: 4px;
+  background: #bdc3c7;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(39, 174, 96, 0.8);
+  background: #95a5a6;
 }
 
 /* --- Components --- */
 
-/* Welcome Banner */
+/* Welcome Banner (Clean & Authoritative) */
 .welcome-banner {
   background: white;
-  border-radius: 20px;
-  padding: 30px 40px;
+  border-radius: 8px;
+  /* Refined radius */
+  padding: 30px;
   margin-bottom: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--glass-shadow);
-  border-left: 5px solid var(--accent-color);
-  animation: slideDown 0.6s ease-out;
+  box-shadow: var(--card-shadow);
+  border-left: 4px solid var(--primary-color);
+  /* Navy stripe */
+  animation: slideDown 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 #headerInfo h1 {
-  font-size: 2rem;
-  margin-bottom: 5px;
-  color: var(--text-main);
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+  /* Navy Title */
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-/* Section Cards */
+/* Section Cards (Elevated) */
 .section-card {
   background: var(--card-bg);
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 8px;
+  padding: 25px;
+  /* Slightly tighter padding */
   margin-bottom: 30px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  animation: fadeIn 0.5s ease-out;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  animation: fadeIn 0.4s ease-out;
 }
 
 .section-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  /* Subtle lift */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .section-card h2,
 .section-card h3 {
-  color: var(--text-main);
+  color: var(--primary-color);
   margin-top: 0;
   font-weight: 600;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 /* --- Form Elements --- */
 input,
 select {
   width: 100%;
-  padding: 15px 20px;
-  margin: 10px 0 20px 0;
+  padding: 12px 15px;
+  margin: 8px 0 20px 0;
   background: var(--input-bg);
-  border: 2px solid var(--border-color);
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  /* Thinner border */
+  border-radius: 6px;
   color: var(--text-main);
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
 }
 
-/* Colorful Placeholders */
 ::placeholder {
-  color: #95a5a6;
+  color: #b2bec3;
 }
 
 input:focus,
 select:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+  /* Navy glow */
 }
 
-/* Buttons */
+/* Buttons (Professional) */
 .btn {
-  background: var(--primary-gradient);
+  background: var(--accent-color);
+  /* Teal Action */
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 184, 148, 0.2);
+  letter-spacing: 0.3px;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+  filter: brightness(1.05);
+  /* Slight brighten */
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+  background: #e74c3c;
+  box-shadow: 0 2px 5px rgba(231, 76, 60, 0.2);
 }
 
-/* --- Tables --- */
+.btn-danger:hover {
+  background: #d63031;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* --- Tables (Enterprise) --- */
 table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 10px;
-  margin-top: 15px;
+  /* Required for border-radius */
+  border-spacing: 0;
+  /* But look connected */
+  margin-top: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background: #f8f9fa;
 }
 
 th {
   color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.8em;
-  padding: 15px 20px;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 16px 20px;
   text-align: left;
+  border-bottom: 1px solid var(--border-color);
 }
 
 td {
   background: white;
-  padding: 20px;
+  padding: 16px 20px;
   color: var(--text-main);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 0.95rem;
 }
 
-tr td:first-child {
-  border-radius: 10px 0 0 10px;
-}
-
-tr td:last-child {
-  border-radius: 0 10px 10px 0;
+tr:last-child td {
+  border-bottom: none;
 }
 
 tr:hover td {
-  background: #fdfdfd;
-  transform: scale(1.01);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s;
+  background: #fcfcfc;
 }
 
 /* --- Cards Grid (Courses) --- */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+  gap: 24px;
 }
 
 .card {
   background: white;
   border: 1px solid var(--border-color);
-  padding: 25px;
-  border-radius: 16px;
-  transition: all 0.3s ease;
+  padding: 24px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  border-color: var(--accent-color);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px);
+  border-color: var(--primary-color);
+  box-shadow: var(--card-shadow);
 }
 
 .card h3 {
-  margin: 0 0 10px 0;
-  color: var(--accent-color);
+  margin: 0 0 8px 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+/* --- Registration/Login (Full Screen) --- */
+.hero-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Center horizontally */
+  justify-content: flex-start;
+  /* Start from top */
+  padding: 40px 20px;
+
+  /* Modern Gradient Background instead of Image */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* If user prefers the auth card to be white on this gray bg */
+.auth-card {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  /* Deep shadow */
+  text-align: center;
+  position: relative;
+  /* border: none; remove glass border */
+  margin: auto;
+  /* Vertically center in the scroll view */
 }
 
 /* --- Animations --- */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
 
   to {
@@ -304,7 +407,7 @@ tr:hover td {
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
 
   to {
@@ -314,158 +417,103 @@ tr:hover td {
 }
 
 .fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* --- Login Page Fixes --- */
-.hero-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  /* Start from top, allow margin:auto to center */
-  background-image: url('../images/bg_green.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 999;
-  overflow-y: auto;
-  /* Enable scrolling */
-  padding: 40px 20px;
-  /* Top/Bottom padding */
-}
-
-.auth-card {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(15px);
-  padding: 50px;
-  border-radius: 24px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  text-align: center;
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  margin: auto;
-  /* Vertically center */
-}
-
-.input-group {
-  position: relative;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-/* --- Mobile Responsiveness --- */
+/* --- Mobile Responsiveness (Preserved & Tweaked) --- */
 @media (max-width: 768px) {
   body {
+    height: auto;
     overflow: auto;
-    /* Allow scrolling on mobile */
-    height: auto;
   }
 
+  /* 1. Stack Layout */
   .container {
-    display: block;
-    min-height: 100vh;
-    /* Ensure full background coverage */
+    display: flex;
+    flex-direction: column;
     height: auto;
-    overflow-x: hidden;
+    width: 100%;
   }
 
+  /* 2. Sticky Horizontal Nav */
   .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    width: 260px;
-    transform: translateX(-110%);
-    /* Explicitly hidden */
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  .main-content {
     width: 100%;
     height: auto;
     padding: 15px;
-    padding-top: 60px;
-    /* Space for floating button */
-    overflow-y: visible;
+    position: sticky;
+    top: 0;
+    left: 0;
+    transform: none;
+    /* Reset desktop/hidden transform */
+    flex-direction: row;
+    overflow-x: auto;
+    /* Horizontal Scroll */
+    white-space: nowrap;
+    /* Keep items in one line */
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 0 0 15px 15px;
+    /* Rounded bottom corners */
+    z-index: 1000;
   }
 
-  /* Show Menu Button */
-  #mobileMenuBtn {
-    display: flex !important;
+  .sidebar h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    margin-right: 20px;
+    display: none;
+    /* Hide title on mobile to save space */
   }
 
-  /* Adjust Banner */
-  .welcome-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
-    gap: 15px;
-    margin-top: 10px;
-  }
-
-  .welcome-banner #headerInfo h1 {
-    font-size: 1.5rem;
-  }
-
-  .welcome-banner button {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  /* Stack Grids */
-  .cards-grid,
-  #studentSection>div,
-  .admin-controls,
-  #subjects-section>div>div {
-    grid-template-columns: 1fr !important;
-    display: grid;
-    gap: 20px;
-    flex-direction: column;
-  }
-
-  /* Flex containers that need to stack */
-  .admin-controls {
+  /* Reduce nav item padding for horizontal bar */
+  .sidebar nav {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
   }
 
-  /* Tables */
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
+  .sidebar nav div {
+    margin-bottom: 0;
+    padding: 10px 15px;
     font-size: 0.9em;
   }
 
-  th,
-  td {
-    padding: 10px;
+  .sidebar nav div i {
+    margin-right: 5px;
   }
 
-  /* Profile Card */
-  #view-profile .section-card>div.grid {
-    grid-template-columns: 1fr !important;
+  /* 3. Main Content Adjustments */
+  .main-content {
+    padding: 20px;
+    width: 100%;
+    overflow: visible;
+    /* Scroll happens on body */
+    padding-top: 20px;
+  }
+
+  /* 4. Stack Grid Columns */
+  /* Force all 2-column grids (like Attendance/Marks) to stack into 1 column */
+  .grid,
+  .cards-grid,
+  #studentSection>div,
+  .admin-controls,
+  #view-profile .section-card>div {
     display: flex !important;
-    flex-direction: column;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px;
   }
 
-  /* Teacher Classroom Form */
-  #teacherSection .section-card>div>div {
-    grid-template-columns: 1fr !important;
+  /* 5. Scrollable Tables */
+  /* Ensure all tables have overflow-x: auto so they don't break the screen width */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .hero-bg {
+    padding: 20px 10px;
+    /* Minimal padding */
   }
 }

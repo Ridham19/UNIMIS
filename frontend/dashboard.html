@@ -5,7 +5,7 @@
   <title>Dashboard | UNIMIS</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/styles.css?v=2">
+  <link rel="stylesheet" href="css/styles.css?v=4">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     /* SPA View Logic */
@@ -23,14 +23,6 @@
       color: white;
       border-left: 4px solid #00cec9;
       /* Accent Color */
-    }
-
-    /* Admin Only Visibility Helper */
-    /* Role-based Visibility */
-    .admin-only,
-    .student-only,
-    .academic-only {
-      display: none;
     }
   </style>
 </head>
@@ -58,9 +50,7 @@
         <div id="nav-fees" class="student-only" onclick="switchView('fees')">
           <i class="fas fa-money-bill-wave"></i> Fees
         </div>
-        <div id="nav-branches" class="admin-only" onclick="switchView('branches')">
-          <i class="fas fa-code-branch"></i> Manage Branches
-        </div>
+
         <div id="nav-admin" class="admin-only" onclick="switchView('admin')">
           <i class="fas fa-chart-line"></i> Admin Panel
         </div>
@@ -254,35 +244,6 @@
         </div>
       </div>
 
-      <div id="view-branches" class="view-section fade-in">
-        <div class="section-card">
-          <h3 style="color: #2d3436;">Manage University Branches</h3>
-          <p>Add or remove branches available for student registration.</p>
-
-          <div
-            style="background: #f1f2f6; padding: 20px; border-radius: 8px; margin-bottom: 20px; display:flex; gap:10px; align-items: center;">
-            <input type="text" id="newBranchName" placeholder="Branch Name (e.g., Computer Science)"
-              style="margin:0; flex: 2;">
-            <input type="text" id="newBranchCode" placeholder="Code (e.g., CS)" style="margin:0; flex: 1;">
-            <button onclick="addBranch()" class="btn" style="flex: 0;">Add Branch</button>
-          </div>
-
-          <h3>Existing Branches</h3>
-          <div style="overflow-x: auto;">
-            <table id="branchTable">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Code</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
       <!-- NEW ADMIN VIEW INTEGRATED -->
       <div id="view-admin" class="view-section" style="color: #2d3436;">
         <div class="section-card">
@@ -292,6 +253,7 @@
             <button class="btn" onclick="showAdminSection('faculty')">Faculty View</button>
             <button class="btn" onclick="showAdminSection('student')">Student View</button>
             <button class="btn" onclick="showAdminSection('subjects')">Manage Subjects</button>
+            <button class="btn" onclick="showAdminSection('branches')">Manage Branches</button>
             <button class="btn" onclick="showAdminSection('notices')">Post Notice</button>
           </div>
 
@@ -326,6 +288,35 @@
               </div>
             </div>
             <div id="student-results"></div>
+          </div>
+
+          <!-- Branches View (Moved from separate view) -->
+          <div id="branches-section" class="admin-sub-view" style="display:none;">
+            <h3 style="color: #2d3436;">Manage University Branches</h3>
+            <p>Add or remove branches available for student registration.</p>
+
+            <div
+              style="background: #f1f2f6; padding: 20px; border-radius: 8px; margin-bottom: 20px; display:flex; gap:10px; align-items: center;">
+              <input type="text" id="newBranchName" placeholder="Branch Name (e.g., Computer Science)"
+                style="margin:0; flex: 2;">
+              <input type="text" id="newBranchCode" placeholder="Code (e.g., CS)" style="margin:0; flex: 1;">
+              <button onclick="addBranch()" class="btn" style="background:var(--accent-color); flex: 0;">Add
+                Branch</button>
+            </div>
+
+            <h3>Existing Branches</h3>
+            <div style="overflow-x: auto;">
+              <table id="branchTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
 
           <!-- Subjects View -->
@@ -433,11 +424,11 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/user.js?v=3"></script>
-  <script src="js/attendance.js?v=3"></script>
-  <script src="js/marks.js?v=3"></script>
-  <script src="js/notice.js?v=3"></script>
-  <script src="js/admin.js?v=3"></script>
+  <script src="js/user.js?v=4"></script>
+  <script src="js/attendance.js?v=4"></script>
+  <script src="js/marks.js?v=4"></script>
+  <script src="js/notice.js?v=4"></script>
+  <script src="js/admin.js?v=4"></script>
   <script>
     // Mobile Sidebar Logic
     function toggleSidebar() {
@@ -468,16 +459,11 @@
         'courses': 'My Courses',
         'schedule': 'Schedule',
         'profile': 'My Profile',
-        'branches': 'Manage Branches',
+
         'fees': 'My Fee Status',
         'admin': 'Admin Panel'
       };
       document.querySelector('#headerInfo h1').innerText = titles[viewName];
-
-      if (viewName === 'branches') {
-        // Refresh branches when entering the view
-        if (typeof loadAdminBranches === 'function') loadAdminBranches();
-      }
     }
 
     function logout() {
