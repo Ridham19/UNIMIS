@@ -127,7 +127,7 @@ def get_teacher_subjects():
     # Enforce Branch Filter from Token
     import jwt
     import datetime
-    SECRET_KEY = "your_secret_key" # Matching auth.py
+    from config import JWT_SECRET # Use centralized config
     
     auth_header = request.headers.get('Authorization')
     branch_code = None
@@ -136,7 +136,7 @@ def get_teacher_subjects():
     if auth_header:
         try:
             token = auth_header.split(" ")[1]
-            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
             user_id = payload.get('user_id')
             
             # Verify User in DB to get latest branch

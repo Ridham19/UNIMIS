@@ -10,10 +10,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   });
 
   const data = await res.json();
-  if (data.token) {
+  const errorDiv = document.getElementById('loginErrorMessage');
+
+  if (res.ok && data.token) {
     localStorage.setItem('token', data.token);
     window.location.href = 'dashboard.html';
   } else {
-    alert('Login failed');
+    // Show Error
+    errorDiv.textContent = data.error || 'Invalid credentials or login failed';
+    errorDiv.style.display = 'block';
   }
 });
